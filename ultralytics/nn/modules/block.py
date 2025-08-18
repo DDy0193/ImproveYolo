@@ -52,19 +52,19 @@ __all__ = (
     "PSA",
     "SCDown",
     "TorchVision",
-    "SE_Block"
+    "SE_Block",
 )
-'''-------------一、SE模块-----------------------------'''
+"""-------------一、SE模块-----------------------------"""
 
 
 class GAM_Attention(nn.Module):
     def __init__(self, in_channels, c2, rate=4):
-        super(GAM_Attention, self).__init__()
+        super().__init__()
 
         self.channel_attention = nn.Sequential(
             nn.Linear(in_channels, int(in_channels / rate)),
             nn.ReLU(inplace=True),
-            nn.Linear(int(in_channels / rate), in_channels)
+            nn.Linear(int(in_channels / rate), in_channels),
         )
 
         self.spatial_attention = nn.Sequential(
@@ -72,7 +72,7 @@ class GAM_Attention(nn.Module):
             nn.BatchNorm2d(int(in_channels / rate)),
             nn.ReLU(inplace=True),
             nn.Conv2d(int(in_channels / rate), in_channels, kernel_size=7, padding=3),
-            nn.BatchNorm2d(in_channels)
+            nn.BatchNorm2d(in_channels),
         )
 
     def forward(self, x):
@@ -90,7 +90,7 @@ class GAM_Attention(nn.Module):
 # 全局平均池化+1*1卷积核+ReLu+1*1卷积核+Sigmoid
 class SE_Block(nn.Module):
     def __init__(self, inchannel, ratio=16):
-        super(SE_Block, self).__init__()
+        super().__init__()
         # 全局平均池化(Fsq操作)
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         # 两个全连接层(Fex操作)
@@ -98,7 +98,7 @@ class SE_Block(nn.Module):
             nn.Linear(inchannel, inchannel // ratio, bias=False),  # 从 c -> c/r
             nn.ReLU(),
             nn.Linear(inchannel // ratio, inchannel, bias=False),  # 从 c/r -> c
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
