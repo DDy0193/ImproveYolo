@@ -58,8 +58,8 @@ from .block import (
     RepVGGDW,
     ResNetLayer,
     SCDown,
-    TorchVision,
     SE_Block,
+    TorchVision,
 )
 from .conv import (
     CBAM,
@@ -90,6 +90,7 @@ from .head import (
     YOLOESegment,
     v10Detect,
 )
+from .mobilenetv4 import MobileNetV4ConvSmall
 from .transformer import (
     AIFI,
     MLP,
@@ -102,7 +103,7 @@ from .transformer import (
     TransformerEncoderLayer,
     TransformerLayer,
 )
-from .mobilenetv4 import MobileNetV4ConvSmall
+
 __all__ = (
     "Conv",
     "Conv2",
@@ -181,5 +182,5 @@ __all__ = (
     "Index",
     "A2C2f",
     "SE_Block",
-    "MobileNetV4ConvSmall"
+    "MobileNetV4ConvSmall",
 )

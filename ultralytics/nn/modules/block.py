@@ -1,7 +1,7 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 """Block modules."""
 
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -52,19 +52,19 @@ __all__ = (
     "PSA",
     "SCDown",
     "TorchVision",
-    "SE_Block"
+    "SE_Block",
 )
-'''-------------一、SE模块-----------------------------'''
+"""-------------一、SE模块-----------------------------"""
 
 
 class GAM_Attention(nn.Module):
     def __init__(self, in_channels, c2, rate=4):
-        super(GAM_Attention, self).__init__()
+        super().__init__()
 
         self.channel_attention = nn.Sequential(
             nn.Linear(in_channels, int(in_channels / rate)),
             nn.ReLU(inplace=True),
-            nn.Linear(int(in_channels / rate), in_channels)
+            nn.Linear(int(in_channels / rate), in_channels),
         )
 
         self.spatial_attention = nn.Sequential(
@@ -72,7 +72,7 @@ class GAM_Attention(nn.Module):
             nn.BatchNorm2d(int(in_channels / rate)),
             nn.ReLU(inplace=True),
             nn.Conv2d(int(in_channels / rate), in_channels, kernel_size=7, padding=3),
-            nn.BatchNorm2d(in_channels)
+            nn.BatchNorm2d(in_channels),
         )
 
     def forward(self, x):
@@ -90,7 +90,7 @@ class GAM_Attention(nn.Module):
 # 全局平均池化+1*1卷积核+ReLu+1*1卷积核+Sigmoid
 class SE_Block(nn.Module):
     def __init__(self, inchannel, ratio=16):
-        super(SE_Block, self).__init__()
+        super().__init__()
         # 全局平均池化(Fsq操作)
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         # 两个全连接层(Fex操作)
@@ -98,7 +98,7 @@ class SE_Block(nn.Module):
             nn.Linear(inchannel, inchannel // ratio, bias=False),  # 从 c -> c/r
             nn.ReLU(),
             nn.Linear(inchannel // ratio, inchannel, bias=False),  # 从 c/r -> c
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
@@ -249,7 +249,7 @@ class HGBlock(nn.Module):
 class SPP(nn.Module):
     """Spatial Pyramid Pooling (SPP) layer https://arxiv.org/abs/1406.4729."""
 
-    def __init__(self, c1: int, c2: int, k: Tuple[int, ...] = (5, 9, 13)):
+    def __init__(self, c1: int, c2: int, k: tuple[int, ...] = (5, 9, 13)):
         """
         Initialize the SPP layer with input/output channels and pooling kernel sizes.
 
@@ -528,7 +528,7 @@ class Bottleneck(nn.Module):
     """Standard bottleneck."""
 
     def __init__(
-        self, c1: int, c2: int, shortcut: bool = True, g: int = 1, k: Tuple[int, int] = (3, 3), e: float = 0.5
+        self, c1: int, c2: int, shortcut: bool = True, g: int = 1, k: tuple[int, int] = (3, 3), e: float = 0.5
     ):
         """
         Initialize a standard bottleneck module.
@@ -768,7 +768,7 @@ class ImagePoolingAttn(nn.Module):
     """ImagePoolingAttn: Enhance the text embeddings with image-aware information."""
 
     def __init__(
-        self, ec: int = 256, ch: Tuple[int, ...] = (), ct: int = 512, nh: int = 8, k: int = 3, scale: bool = False
+        self, ec: int = 256, ch: tuple[int, ...] = (), ct: int = 512, nh: int = 8, k: int = 3, scale: bool = False
     ):
         """
         Initialize ImagePoolingAttn module.
@@ -797,7 +797,7 @@ class ImagePoolingAttn(nn.Module):
         self.hc = ec // nh
         self.k = k
 
-    def forward(self, x: List[torch.Tensor], text: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: list[torch.Tensor], text: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of ImagePoolingAttn.
 
@@ -913,7 +913,7 @@ class RepBottleneck(Bottleneck):
     """Rep bottleneck."""
 
     def __init__(
-        self, c1: int, c2: int, shortcut: bool = True, g: int = 1, k: Tuple[int, int] = (3, 3), e: float = 0.5
+        self, c1: int, c2: int, shortcut: bool = True, g: int = 1, k: tuple[int, int] = (3, 3), e: float = 0.5
     ):
         """
         Initialize RepBottleneck.
@@ -1083,7 +1083,7 @@ class SPPELAN(nn.Module):
 class CBLinear(nn.Module):
     """CBLinear."""
 
-    def __init__(self, c1: int, c2s: List[int], k: int = 1, s: int = 1, p: Optional[int] = None, g: int = 1):
+    def __init__(self, c1: int, c2s: list[int], k: int = 1, s: int = 1, p: Optional[int] = None, g: int = 1):
         """
         Initialize CBLinear module.
 
@@ -1099,7 +1099,7 @@ class CBLinear(nn.Module):
         self.c2s = c2s
         self.conv = nn.Conv2d(c1, sum(c2s), k, s, autopad(k, p), groups=g, bias=True)
 
-    def forward(self, x: torch.Tensor) -> List[torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> list[torch.Tensor]:
         """Forward pass through CBLinear layer."""
         return self.conv(x).split(self.c2s, dim=1)
 
@@ -1107,7 +1107,7 @@ class CBLinear(nn.Module):
 class CBFuse(nn.Module):
     """CBFuse."""
 
-    def __init__(self, idx: List[int]):
+    def __init__(self, idx: list[int]):
         """
         Initialize CBFuse module.
 
@@ -1117,7 +1117,7 @@ class CBFuse(nn.Module):
         super().__init__()
         self.idx = idx
 
-    def forward(self, xs: List[torch.Tensor]) -> torch.Tensor:
+    def forward(self, xs: list[torch.Tensor]) -> torch.Tensor:
         """
         Forward pass through CBFuse layer.
 
@@ -2031,7 +2031,7 @@ class Residual(nn.Module):
 class SAVPE(nn.Module):
     """Spatial-Aware Visual Prompt Embedding module for feature enhancement."""
 
-    def __init__(self, ch: List[int], c3: int, embed: int):
+    def __init__(self, ch: list[int], c3: int, embed: int):
         """
         Initialize SAVPE module with channels, intermediate channels, and embedding dimension.
 
@@ -2059,7 +2059,7 @@ class SAVPE(nn.Module):
         self.cv5 = nn.Conv2d(1, self.c, 3, padding=1)
         self.cv6 = nn.Sequential(Conv(2 * self.c, self.c, 3), nn.Conv2d(self.c, self.c, 3, padding=1))
 
-    def forward(self, x: List[torch.Tensor], vp: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: list[torch.Tensor], vp: torch.Tensor) -> torch.Tensor:
         """Process input features and visual prompts to generate enhanced embeddings."""
         y = [self.cv2[i](xi) for i, xi in enumerate(x)]
         y = self.cv4(torch.cat(y, dim=1))
